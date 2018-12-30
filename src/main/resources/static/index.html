@@ -1,11 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>jQuery Example</title>
+    <script>
+    $(document).ready(function() {
+  $.ajaxSetup({ cache: true });
+  $.getScript('https://connect.facebook.net/en_US/sdk.js', function(){
+    FB.init({
+      appId: '2062443107418812',
+      version: 'v2.7' // or v2.1, v2.2, v2.3, ...
+    });
+    });
+});
+
+
+function login()
+{
+FB.login(function(response) {
+
+    if (response.authResponse) {
+      console.log('access token is '+ response.authResponse.accessToken);
+
+           $.ajax({url: "http://localhost:8888/social/facebook?facebookAccessToken=" + response.authResponse.accessToken , success: function(result){
+
+            var myAccessToken = result.access_token;
+
+              $.ajax({url: "http://localhost:9999/test",headers: { 'Authorization': 'bearer '+myAccessToken} ,  success: function(result){
+                 console.log(result);
+               }});
+
+          }
+    });
+
+    } else {
+     console.log('User cancelled login or did not fully authorize.');
+    }
+},{scope: 'public_profile,email,user_birthday'});
+}
+
+
+  </script>
 </head>
 <body>
-welcome to my awesome application ... it works under https
+<button onclick="login()">login</button>
 
 </body>
+
 </html>
