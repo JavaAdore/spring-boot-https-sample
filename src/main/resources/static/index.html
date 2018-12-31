@@ -1,7 +1,9 @@
 <html>
 <head>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="727213464024-np7uoeu22ikmp3a6unn8mp3840ls2eoh.apps.googleusercontent.com">
+
     <title>jQuery Example</title>
     <script>
     $(document).ready(function() {
@@ -20,7 +22,6 @@ function login()
 FB.login(function(response) {
 
     if (response.authResponse) {
-      console.log('access token is '+ response.authResponse.accessToken);
 
            $.ajax({url: "http://localhost:8888/social/facebook?facebookAccessToken=" + response.authResponse.accessToken , success: function(result){
 
@@ -40,10 +41,33 @@ FB.login(function(response) {
 }
 
 
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+
+    var id_token = googleUser.getAuthResponse().id_token;
+
+         $.ajax({url: "http://localhost:8888/social/google?clientIdToken=" + id_token , success: function(result){
+
+            var myAccessToken = result.access_token;
+                console.log(result.access_token);
+
+              $.ajax({url: "http://localhost:9999/test",headers: { 'Authorization': 'bearer '+myAccessToken} ,  success: function(result){
+                 console.log(result);
+               }});
+
+          }
+    });
+
+}
+
+
   </script>
 </head>
 <body>
-<button onclick="login()">login</button>
+<button onclick="login()">login With facebook</button>
+
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+
 
 </body>
 
